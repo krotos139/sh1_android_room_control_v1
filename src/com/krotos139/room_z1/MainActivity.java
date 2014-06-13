@@ -1,5 +1,7 @@
 package com.krotos139.room_z1;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
@@ -7,6 +9,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -29,11 +33,21 @@ public class MainActivity extends Activity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+    
+    private WebServer server;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        server = new WebServer();
+        try {
+            server.start();
+        } catch(IOException ioe) {
+            Log.w("Httpd", "The server could not start.");
+        }
+        Log.w("Httpd", "Web server initialized.");
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -132,6 +146,8 @@ public class MainActivity extends Activity
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+            WebView myWebView = (WebView) rootView.findViewById(R.id.webView1);
+            myWebView.loadUrl("http://localhost:8080/");
             return rootView;
         }
 
