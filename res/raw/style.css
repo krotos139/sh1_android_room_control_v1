@@ -1,0 +1,82 @@
+	   .z1 {
+			font-family:Arial, Helvetica, sans-serif;
+			color:#666;
+			font-size:12px;
+			text-shadow: 1px 1px 0px #fff;
+			background:#eaebec;
+			margin:20px;
+			border:#ccc 1px solid;
+			border-collapse:separate; 
+			border-radius:3px;
+			box-shadow: 0 1px 2px #d1d1d1;
+	   }
+	   .z1 th {
+			font-weight:bold;
+			padding:15px;
+			border-bottom:1px solid #e0e0e0;
+			background: #ededed;
+			background: linear-gradient(to top,  #ededed,  #ebebeb);
+	   }
+	   .z1 td {
+			padding:10px;
+			background: #f2f2f2;
+			background: linear-gradient(to top,  #f2f2f2,  #f0f0f0);  
+	   }
+		.z1 tr:hover td{
+			background: #aaaaaa;
+			background: linear-gradient(to top, #f2f2f2,  #e0e0e0);  
+		}
+		.z1_text {
+			color:#000000;
+			text-decoration:none;
+			text-shadow:0px 1px 0px #FFFFFF;
+			padding:10px;
+			font-family:arial;
+			font-size:16px;
+			font-weight:bold;
+		}
+		.z1_button_green {
+			background-color:#77bb55;
+			border-radius:4px;
+			border:1px solid #448822;
+			display:inline-block;
+			color:#FFFFFF;
+			text-decoration:none;
+			text-shadow:0px 1px 0px #000000;
+			width: 200px;
+			padding:10px;
+			text-align:center;
+			font-family:arial;
+			font-size:16px;
+			font-weight:bold;
+		}
+		.z1_button_red {
+			background-color:#aa3333;
+			border-radius:4px;
+			border:1px solid #000000;
+			display:inline-block;
+			color:#FFFFFF;
+			text-decoration:none;
+			text-shadow:0px 1px 0px #000000;
+			width: 200px;
+			padding:10px;
+			text-align:center;
+			font-family:arial;
+			font-size:16px;
+			font-weight:bold;
+		}
+		.z1_button_white {
+			background-color:#111111;
+			border-radius:4px;
+			border:1px solid #DDDDDD;
+			display:inline-block;
+			color:#FFFFFF;
+			text-decoration:none;
+			text-shadow:0px 1px 0px #000000;
+			width: 200px;
+			padding:10px;
+			text-align:center;
+			font-family:arial;
+			font-size:16px;
+			font-weight:bold;
+		}

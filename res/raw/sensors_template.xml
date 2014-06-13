@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sensors.xsl"?>
+<response>
+	<temperature>
+		<celsius>%TEMPTERATURE_CELSIUS%</celsius>
+	</temperature>
+	<humidity>
+		<percentage>%HUMIDITY_PERC%</percentage>
+	</humidity>
+	<current>
+		<amper>%CURRENT_AMPER%</amper>
+	</current>
+	<MQ2>
+		<percentage>%MQ2_PERC%</percentage>
+	</MQ2>
+	<PIR>
+		<percentage>%PIR_PERC%</percentage>
+	</PIR>
+</response>
+

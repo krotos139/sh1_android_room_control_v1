@@ -32,6 +32,8 @@ public class USB_IO {
     private static final int ARDUINO_MEGA_2560_ADK_R3_USB_PRODUCT_ID = 0x44;
     private static final int ARDUINO_MEGA_2560_ADK_USB_PRODUCT_ID = 0x3F;
     private static final int ARDUINO_LEONARDO_ADK_USB_PRODUCT_ID = 0x8036;
+
+	private static final String ACTION_USB_PERMISSION = "com.krotos139.room_z1";
     
     private volatile UsbDevice mUsbDevice = null;
     private volatile UsbDeviceConnection mUsbConnection = null;
@@ -112,6 +114,10 @@ public class USB_IO {
         } else {
             Log.i(TAG, "Device found!");
             
+            PendingIntent mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
+            mUsbManager.requestPermission(mUsbDevice, mPermissionIntent);
+            
+            
             initDevice(mUsbDevice, mUsbManager);
             
          //   Intent startIntent = new Intent(context, ArduinoCommunicatorService.class);
@@ -186,6 +192,8 @@ public class USB_IO {
 	public boolean Transmit(byte[] data) { 
 		if (mUsbDevice == null) return false;
 		
+		Log.d(TAG, "mOutUsbEndpoint="+mOutUsbEndpoint);
+		Log.d(TAG, "data.len="+data.length);
 		final int len = mUsbConnection.bulkTransfer(mOutUsbEndpoint, data, data.length, 0);
     	Log.d(TAG, len + " of " + data.length + " sent.");
     	if (len != data.length) {
@@ -208,9 +216,9 @@ public class USB_IO {
         }
     	
     	public void run() {
-            byte[] inBuffer = new byte[4];
+            byte[] inBuffer = new byte[16];
             while(mUsbDevice != null ) {
-                Log.d(TAG, "calling bulkTransfer() in");
+                //Log.d(TAG, "calling bulkTransfer() in");
                 final int len = mUsbConnection.bulkTransfer(mInUsbEndpoint, inBuffer, inBuffer.length, 0);
                 sender.resive(inBuffer, len);
             }

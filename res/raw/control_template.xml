@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/control.xsl"?>
+<response>
+	<outputs>
+		<relays>
+			<relay id="1" name="Relay 1">%RELAY1%</relay>
+			<relay id="2" name="Relay 2">%RELAY2%</relay>
+			<relay id="3" name="Relay 3">%RELAY3%</relay>
+			<relay id="4" name="Relay 4">%RELAY4%</relay>
+			<relay id="5" name="Relay 5">%RELAY5%</relay>
+			<relay id="6" name="Relay 6">%RELAY6%</relay>
+			<relay id="7" name="Relay 7">%RELAY7%</relay>
+			<relay id="8" name="Relay 8">%RELAY8%</relay>
+		</relays>
+	</outputs>
+</response>
+
