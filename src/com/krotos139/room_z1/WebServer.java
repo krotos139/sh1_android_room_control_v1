@@ -17,7 +17,8 @@ import fi.iki.elonen.NanoHTTPD.Response.Status;
 public class WebServer extends NanoHTTPD {
 	Resources res;
 	Context c;
-	BoardZ1Room z1room;
+	private Thread TCPModbusThread;
+	static BoardZ1Room z1room;
 	
     public WebServer(Context context)
     {
@@ -25,6 +26,9 @@ public class WebServer extends NanoHTTPD {
         this.c = context;
         this.res = context.getResources();
         z1room = new BoardZ1Room(c);
+        
+        this.TCPModbusThread = new Thread(new TCPModbus());
+        this.TCPModbusThread.start();
     }
 
     @Override public Response serve(IHTTPSession session) {

@@ -75,4 +75,9 @@ public class CRCMODBUS {
 			byteStr[1] = (byte) ((crc & 0x0000ff00) >>> 8);
 			return byteStr;
 	    }
+
+		public static byte[] calc(byte[] data) {
+			// TODO Auto-generated method stub
+			return calc(data, data.length);
+		}
 }

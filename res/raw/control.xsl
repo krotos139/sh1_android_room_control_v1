@@ -5,9 +5,20 @@
   <html>
   <head>
 	  <title>Room control</title>
+	  <meta http-equiv='refresh' content='15' url='/control.xml'/>
 	  <link rel="stylesheet" type="text/css" href="/style.css"/>
   </head>
   <body>
+      <table class='z1'>
+      <tr>
+        <td>
+			<a href='/control.xml' class="z1_button_small">Control</a>
+		</td>
+        <td>
+			<a href='/sensors.xml' class="z1_button_small">Sensors</a>
+		</td>
+      </tr>
+    </table>
     <table class='z1'>
 	  <xsl:for-each select='response/outputs/relays/relay'>
       <tr>

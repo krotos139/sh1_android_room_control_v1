@@ -80,3 +80,18 @@
 			font-size:16px;
 			font-weight:bold;
 		}
+		.z1_button_small {
+			background-color:#111111;
+			border-radius:4px;
+			border:1px solid #DDDDDD;
+			display:inline-block;
+			color:#FFFFFF;
+			text-decoration:none;
+			text-shadow:0px 1px 0px #000000;
+			width: 100px;
+			padding:10px;
+			text-align:center;
+			font-family:arial;
+			font-size:16px;
+			font-weight:bold;
+		}

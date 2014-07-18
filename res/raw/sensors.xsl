@@ -5,9 +5,20 @@
   <html>
   <head>
 	  <title>Room sensors</title>
+	  <meta http-equiv='refresh' content='10' url='/sensors.xml'/>
 	  <link rel="stylesheet" type="text/css" href="/style.css"/>
   </head>
   <body>
+    <table class='z1'>
+      <tr>
+        <td>
+	      <a href='/control.xml' class="z1_button_small">Control</a>
+	    </td>
+        <td>
+	      <a href='/sensors.xml' class="z1_button_small">Sensors</a>
+	    </td>
+      </tr>
+    </table>
   <h2>Sensors</h2>
     <table class='z1'>
       <tr>

@@ -38,7 +38,7 @@ public class BoardZ1Room implements DataResiver {
 		COUNT_FILES
 	}
 	
-	private int db [];
+	public int db [];
 	
 	private USB_IO usb;
 	private Modbus bus;
@@ -53,22 +53,29 @@ public class BoardZ1Room implements DataResiver {
 		bus = new Modbus(1);
 	}
 
-	public int read(FILE f) {
-		Log.d(TAG, "read f="+f.ordinal()+"");
-		return db[f.ordinal()];
+	public int read(int f) {
+		Log.d(TAG, "read f="+f+"");
+		return db[f];
 		//return 0;
+		
+	}
+	public int read(FILE f) {
+		return read(f.ordinal());
+	}
+	
+	public void write(int f, int value) {
+		byte msg[];
+		Log.d(TAG, "write f="+f+" v="+value);		
+		
+		db[f] = value;
+		
+		msg = bus.PresetMultipleRegisters(f, value);
+		usb.Transmit(msg);
 		
 	}
 	
 	public void write(FILE f, int value) {
-		byte msg[];
-		Log.d(TAG, "write f="+f.ordinal()+" v="+value);		
-		
-		db[f.ordinal()] = value;
-		
-		msg = bus.PresetMultipleRegisters(f.ordinal(), value);
-		usb.Transmit(msg);
-		
+		write(f.ordinal(), value);			
 	}
 
 	@Override
