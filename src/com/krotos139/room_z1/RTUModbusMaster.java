@@ -18,9 +18,9 @@ import com.hoho.android.usbserial.driver.ProbeTable;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
-import com.krotos139.room_z1.BoardZ1Room.FILE;
+import com.krotos139.room_z1.BoardZ1Room.register;
 
-public class RTUModbusMaster implements Runnable, DataResiver, BoardListener {
+public class RTUModbusMaster implements BoardListener {
 	private final static String TAG = "RTUModbusMaster";
 	
 	private static final String ACTION_USB_PERMISSION = "com.krotos139.room_z1";
@@ -36,8 +36,6 @@ public class RTUModbusMaster implements Runnable, DataResiver, BoardListener {
 	//private USB_IO usb;
 	private UsbSerialPort port;
 	private BoardZ1Room board;
-	private Iterator<FILE> db_l_update_iterator;
-	private int query_read_reg;
 	
     Handler timerHandler = new Handler();
     Runnable timerRunnable = new Runnable() {
@@ -46,8 +44,6 @@ public class RTUModbusMaster implements Runnable, DataResiver, BoardListener {
         public void run() {
         	Log.d(TAG, "read_all");
         	read_all();
-        	Log.d(TAG, "processing");
-        	processing();
 
             timerHandler.postDelayed(this, 1000);
         }
@@ -57,7 +53,6 @@ public class RTUModbusMaster implements Runnable, DataResiver, BoardListener {
 	
 	public RTUModbusMaster(Context c, BoardZ1Room board) {
 		this.board = board; 
-		this.db_l_update_iterator = this.board.db_l_update.iterator();
 		// Register callback
 		this.board.list_write_callbacks.add(this);
 		
@@ -76,9 +71,10 @@ public class RTUModbusMaster implements Runnable, DataResiver, BoardListener {
 		UsbSerialDriver driver = availableDrivers.get(0);
 		PendingIntent mPermissionIntent = PendingIntent.getBroadcast(c, 0, new Intent(ACTION_USB_PERMISSION), 0);
 		manager.requestPermission(driver.getDevice(), mPermissionIntent);
+		
 		UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
 		if (connection == null) {
-		  // You probably need to call UsbManager.requestPermission(driver.getDevice(), ..)
+
 		  return;
 		}
 		List<UsbSerialPort> ports = driver.getPorts();
@@ -89,121 +85,116 @@ public class RTUModbusMaster implements Runnable, DataResiver, BoardListener {
 		
 		try {
 		  port.open(connection);
-//		  port.setBaudRate(115200);
 		  port.setParameters(9600, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
 		  port.setDTR(true);
 //		  port.setRTS(false);
 		  byte pack[] = new byte[128];
 		  int pack_length = port.read(pack, 1000);
-		  Log.d(TAG,"read ( "+pack_length+" bytes) data:"+pack);
 		} catch (IOException e) {
 		  // Deal with error.
 			e.printStackTrace();
 		  return;
-		}
-        
+		} 
         
         Log.d(TAG, "Run service");
         timerHandler.postDelayed(timerRunnable, 0);
 	}
 	
-	private void processing() {
-    	byte pack[] = new byte[128];
-    	byte pdu[];
-    	Modbus mb = new Modbus();
-    	try {
-			int pack_length = port.read(pack, 500);
-			
-			Log.d(TAG, "Read " + pack_length + " bytes.");
-			for (int i=0;i<pack_length;i++)	Log.d(TAG, "PACK["+i+"]="+pack[i]);
-			
-			resive(pack, pack_length);
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	timerHandler.postDelayed(this, 1000);
-	}
 	
 	public void read(int f) {
 		byte pdu[];
 		byte rtu[]; 
-		Modbus mb = new Modbus();
-		
-		Log.d(TAG, "write f="+f);		
+		Modbus mb = new Modbus();	
 		
 		mb.slave_addr = 1;
-		mb.cmd = mb.cmd_read_holding;
+		mb.cmd = Modbus.cmd_read_holding;
 		mb.reg = f;
 		mb.count = 1;
 		
-		query_read_reg = mb.reg;
-		
 		pdu = mb.PDU_encode_request();
 		rtu = mb.RTU_pack(pdu);
-//		usb.Transmit(rtu); TODO
-	}
-	public void read_all() {
-		byte pdu[];
-		byte rtu[]; 
-		Modbus mb = new Modbus();
-		
-		if (!db_l_update_iterator.hasNext()) db_l_update_iterator = this.board.db_l_update.iterator();
-		FILE f = db_l_update_iterator.next();
-		
-		mb.slave_addr = 1;
-		mb.cmd = mb.cmd_read_holding;
-		mb.reg = f.ordinal();
-		mb.count = 1;
-		
-		query_read_reg = mb.reg;
-		
-		pdu = mb.PDU_encode_request();
-		rtu = mb.RTU_pack(pdu);
-		for (int i=0;i<rtu.length;i++)	Log.d(TAG, "PDU["+i+"]="+rtu[i]);
+
 		try {
 			port.write(rtu, 100);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		usb.Transmit(rtu); TODO
+		
+		processing(mb.reg);
 	}
+	public void read_all() {
+		Iterator<register> db_l_update_iterator;
+		
+		db_l_update_iterator = this.board.db_l_update.iterator();
+		while (db_l_update_iterator.hasNext()) {
+			register f = db_l_update_iterator.next();
+			read(f.ordinal());
+		}
+	}
+	
 	public void write(int f, int value) {
 		byte pdu[];
 		byte rtu[]; 
-		Modbus mb = new Modbus();
+		Modbus mb = new Modbus();	
 		
-		Log.d(TAG, "write f="+f+" v="+value);		
+		Log.d(TAG, "write f="+f+" v="+value);
 		
 		mb.slave_addr = 1;
-		mb.cmd = mb.cmd_write_holding;
+		mb.cmd = Modbus.cmd_write_holdings;
 		mb.reg = f;
 		mb.count = 1;
-		mb.data = value;
+		mb.data_array = new int[mb.count];
+		mb.data_array[0] = value;
 		
 		pdu = mb.PDU_encode_request();
 		rtu = mb.RTU_pack(pdu);
 		
-//		usb.Transmit(rtu); TODO
+		try {
+			port.write(rtu, 100);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		processing(mb.reg);
 	}
 	
-	@Override
-	public void resive(byte[] data, int len) {
+	private void processing(int query_read_reg) {
+		int i_read_c, result;
+    	byte pack[] = new byte[128];
+    	int pack_length = 0;
+    	try {
+    		for (i_read_c=0;i_read_c<10;i_read_c++) {
+    			byte m[] = new byte[128];
+				int m_length = port.read(m, 500);
+				
+				for (int i=0;i<m_length;i++) pack[pack_length+i] = m[i];
+				pack_length += m_length;
+				
+				result = resive(pack, pack_length, query_read_reg);
+				if (result == 0) {
+					return;
+				}
+    		}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	return;
+	}
+	
+	public int resive(byte[] data, int len, int query_read_reg) {
 		byte pdu[];
-		Log.d(TAG, "Resive data, len="+len);
 		if (len<=3) {
-			Log.d(TAG, "Data does not resive");
-			return;
+			return 2;
 		}
 		Modbus mb = new Modbus();
 		
 		pdu = mb.RTU_unpack(data, len);
 		if (pdu == null) {
 			Log.w(TAG, "RTU decode fail");
-			return;
+			return 1;
 		}
+		for (int i=0;i<len;i++) Log.d(TAG, "data["+i+"]="+data[i]);
 		mb.PDU_decode_answer(pdu);
 		mb.reg = query_read_reg;
 		
@@ -213,20 +204,14 @@ public class RTUModbusMaster implements Runnable, DataResiver, BoardListener {
 		case Modbus.cmd_read_holding:
 		case Modbus.cmd_read_input:
 			for (int i=0;i<mb.count;i++)  board.db[mb.reg+i] =  mb.data_array[i];
-			for (int i=0;i<mb.count;i++)  Log.d(TAG,"reg =  " + (mb.reg+i) + "data = " + mb.data_array[i]);
 			break;
 		case Modbus.cmd_write_coil:
 		case Modbus.cmd_write_holding:
 			break;
 		}
-		return;
+		return 0;
 	}
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
 	
 
 }

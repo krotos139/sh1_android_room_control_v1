@@ -38,7 +38,7 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.OutputStream;
 
-import com.krotos139.room_z1.BoardZ1Room.FILE;
+import com.krotos139.room_z1.BoardZ1Room.register;
 
 import android.content.Context;
 import android.util.Log;

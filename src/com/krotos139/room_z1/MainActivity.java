@@ -61,7 +61,7 @@ public class MainActivity extends Activity {
     
     private WebServer server;
     private Thread TCPModbusThread;
-    private Thread RTUModbusThread;
+    private RTUModbusMaster RTUModbus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +82,7 @@ public class MainActivity extends Activity {
         this.TCPModbusThread = new Thread(new TCPModbusSlave(getApplicationContext(), this.z1room));
         this.TCPModbusThread.start();
         
-        this.RTUModbusThread = new Thread(new RTUModbusMaster(getApplicationContext(), this.z1room));
-        this.RTUModbusThread.start();
+        this.RTUModbus = new RTUModbusMaster(getApplicationContext(), this.z1room);
         
 
         mTitle = getTitle();

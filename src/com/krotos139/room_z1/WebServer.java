@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import com.krotos139.room_z1.BoardZ1Room.FILE;
+import com.krotos139.room_z1.BoardZ1Room.register;
 
 import android.app.Activity;
 import android.content.Context;
@@ -55,7 +55,7 @@ public class WebServer extends NanoHTTPD {
         super(8080);
         this.c = context;
         this.res = context.getResources();
-        z1room = board;
+        this.z1room = board;
     }
 
     @Override public Response serve(IHTTPSession session) {
@@ -99,41 +99,41 @@ public class WebServer extends NanoHTTPD {
 					int id = Integer.parseInt(parms.get("id"));
 					switch (id) {
 					case 1:
-						z1room.write(FILE.RELAY1, v);
+						z1room.write(register.RELAY1, v);
 						break;
 					case 2:
-						z1room.write(FILE.RELAY2, v);
+						z1room.write(register.RELAY2, v);
 						break;
 					case 3:
-						z1room.write(FILE.RELAY3, v);
+						z1room.write(register.RELAY3, v);
 						break;
 					case 4:
-						z1room.write(FILE.RELAY4, v);
+						z1room.write(register.RELAY4, v);
 						break;
 					case 5:
-						z1room.write(FILE.RELAY5, v);
+						z1room.write(register.RELAY5, v);
 						break;
 					case 6:
-						z1room.write(FILE.RELAY6, v);
+						z1room.write(register.RELAY6, v);
 						break;
 					case 7:
-						z1room.write(FILE.RELAY7, v);
+						z1room.write(register.RELAY7, v);
 						break;
 					case 8:
-						z1room.write(FILE.RELAY8, v);
+						z1room.write(register.RELAY8, v);
 						break;
 					default:
 						break;
 					}
 				}
-            	msg = msg.replace("%RELAY1%", String.valueOf(z1room.read(FILE.RELAY1)) );
-            	msg = msg.replace("%RELAY2%", String.valueOf(z1room.read(FILE.RELAY2)) );
-            	msg = msg.replace("%RELAY3%", String.valueOf(z1room.read(FILE.RELAY3)) );
-            	msg = msg.replace("%RELAY4%", String.valueOf(z1room.read(FILE.RELAY4)) );
-            	msg = msg.replace("%RELAY5%", String.valueOf(z1room.read(FILE.RELAY5)) );
-            	msg = msg.replace("%RELAY6%", String.valueOf(z1room.read(FILE.RELAY6)) );
-            	msg = msg.replace("%RELAY7%", String.valueOf(z1room.read(FILE.RELAY7)) );
-            	msg = msg.replace("%RELAY8%", String.valueOf(z1room.read(FILE.RELAY8)) );
+            	msg = msg.replace("%RELAY1%", String.valueOf(z1room.read(register.RELAY1)) );
+            	msg = msg.replace("%RELAY2%", String.valueOf(z1room.read(register.RELAY2)) );
+            	msg = msg.replace("%RELAY3%", String.valueOf(z1room.read(register.RELAY3)) );
+            	msg = msg.replace("%RELAY4%", String.valueOf(z1room.read(register.RELAY4)) );
+            	msg = msg.replace("%RELAY5%", String.valueOf(z1room.read(register.RELAY5)) );
+            	msg = msg.replace("%RELAY6%", String.valueOf(z1room.read(register.RELAY6)) );
+            	msg = msg.replace("%RELAY7%", String.valueOf(z1room.read(register.RELAY7)) );
+            	msg = msg.replace("%RELAY8%", String.valueOf(z1room.read(register.RELAY8)) );
 			} catch (IOException e) {
 				msg = "500 Internal error";
 			}
@@ -143,11 +143,11 @@ public class WebServer extends NanoHTTPD {
             	InputStream is = res.openRawResource(R.raw.sensors_template);
             	msg = convertStreamToString(is);
 				is.close();
-            	msg = msg.replace("%TEMPTERATURE_CELSIUS%", String.valueOf(z1room.read(FILE.TEMPERATURE)) );
-            	msg = msg.replace("%HUMIDITY_PERC%", String.valueOf(z1room.read(FILE.HUMIDITY)) );
-            	msg = msg.replace("%CURRENT_AMPER%", String.valueOf(z1room.read(FILE.CURRENT)) );
-            	msg = msg.replace("%MQ2_PERC%", String.valueOf(z1room.read(FILE.MQ2)) );
-            	msg = msg.replace("%PIR_PERC%", String.valueOf(z1room.read(FILE.PIR)) );
+            	msg = msg.replace("%TEMPTERATURE_CELSIUS%", String.valueOf(z1room.read(register.TEMPERATURE)) );
+            	msg = msg.replace("%HUMIDITY_PERC%", String.valueOf(z1room.read(register.HUMIDITY)) );
+            	msg = msg.replace("%CURRENT_AMPER%", String.valueOf(z1room.read(register.CURRENT)) );
+            	msg = msg.replace("%MQ2_PERC%", String.valueOf(z1room.read(register.MQ2)) );
+            	msg = msg.replace("%PIR_PERC%", String.valueOf(z1room.read(register.PIR)) );
 			} catch (IOException e) {
 				msg = "500 Internal error";
 			}

@@ -42,7 +42,7 @@ import android.util.Log;
 public class BoardZ1Room {
 	private final static String TAG = "BoardZ1Room";
 	
-	public static enum FILE {
+	public static enum register {
 		DEVICE_ID,	// 0
 		STATE,		// 1
 		
@@ -81,27 +81,27 @@ public class BoardZ1Room {
 	 */
 	public int db [];
 	
-	List<FILE> db_l_update;
+	List<register> db_l_update;
 	
 	public BoardZ1Room(Context c) {
-		Log.d(TAG, "BoardZ1Room db.len="+FILE.values().length+"");
+		Log.d(TAG, "BoardZ1Room db.len="+register.values().length+"");
 		// init db
-		db = new int[FILE.values().length];
+		db = new int[register.values().length];
 		for (int i=0;i<db.length;i++) db[i] = 0;
 		// init db_l_update
-		db_l_update = new ArrayList<BoardZ1Room.FILE>();
-		db_l_update.add(FILE.TEMPERATURE);
-		db_l_update.add(FILE.TEMPERATURE_FRAC);
-		db_l_update.add(FILE.HUMIDITY);
-		db_l_update.add(FILE.HUMIDITY_FRAC);
-		db_l_update.add(FILE.PIR);
-		db_l_update.add(FILE.MQ2);
-		db_l_update.add(FILE.CURRENT);
+		db_l_update = new ArrayList<BoardZ1Room.register>();
+		db_l_update.add(register.TEMPERATURE);
+		db_l_update.add(register.TEMPERATURE_FRAC);
+		db_l_update.add(register.HUMIDITY);
+		db_l_update.add(register.HUMIDITY_FRAC);
+		db_l_update.add(register.PIR);
+		db_l_update.add(register.MQ2);
+		db_l_update.add(register.CURRENT);
 		
 		
 	}
 
-	public int read(FILE f) {
+	public int read(register f) {
 		return read(f.ordinal());
 	}
 	public int read(int f) {
@@ -109,7 +109,7 @@ public class BoardZ1Room {
 		return db[f];
 	}
 
-	public void write(FILE f, int value) {
+	public void write(register f, int value) {
 		write(f.ordinal(), value);			
 	}
 	public void write(int f, int value) {
