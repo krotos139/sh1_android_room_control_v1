@@ -1,3 +1,34 @@
+/*
+    Author: Iuri Iakovlev <krotos139@gmail.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+  (Это свободная программа: вы можете перераспространять ее и/или изменять
+   ее на условиях Стандартной общественной лицензии GNU в том виде, в каком
+   она была опубликована Фондом свободного программного обеспечения; либо
+   версии 3 лицензии, либо (по вашему выбору) любой более поздней версии.
+
+   Эта программа распространяется в надежде, что она будет полезной,
+   но БЕЗО ВСЯКИХ ГАРАНТИЙ; даже без неявной гарантии ТОВАРНОГО ВИДА
+   или ПРИГОДНОСТИ ДЛЯ ОПРЕДЕЛЕННЫХ ЦЕЛЕЙ. Подробнее см. в Стандартной
+   общественной лицензии GNU.
+
+   Вы должны были получить копию Стандартной общественной лицензии GNU
+   вместе с этой программой. Если это не так, см.
+   <http://www.gnu.org/licenses/>.)
+*/
+
 package com.krotos139.room_z1;
 
 import java.io.ByteArrayOutputStream;
@@ -17,18 +48,14 @@ import fi.iki.elonen.NanoHTTPD.Response.Status;
 public class WebServer extends NanoHTTPD {
 	Resources res;
 	Context c;
-	private Thread TCPModbusThread;
-	static BoardZ1Room z1room;
+	BoardZ1Room z1room;
 	
-    public WebServer(Context context)
+    public WebServer(Context context, BoardZ1Room board)
     {
         super(8080);
         this.c = context;
         this.res = context.getResources();
-        z1room = new BoardZ1Room(c);
-        
-        this.TCPModbusThread = new Thread(new TCPModbus());
-        this.TCPModbusThread.start();
+        z1room = board;
     }
 
     @Override public Response serve(IHTTPSession session) {

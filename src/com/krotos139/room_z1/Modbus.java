@@ -1,3 +1,34 @@
+/*
+    Author: Iuri Iakovlev <krotos139@gmail.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+  (Это свободная программа: вы можете перераспространять ее и/или изменять
+   ее на условиях Стандартной общественной лицензии GNU в том виде, в каком
+   она была опубликована Фондом свободного программного обеспечения; либо
+   версии 3 лицензии, либо (по вашему выбору) любой более поздней версии.
+
+   Эта программа распространяется в надежде, что она будет полезной,
+   но БЕЗО ВСЯКИХ ГАРАНТИЙ; даже без неявной гарантии ТОВАРНОГО ВИДА
+   или ПРИГОДНОСТИ ДЛЯ ОПРЕДЕЛЕННЫХ ЦЕЛЕЙ. Подробнее см. в Стандартной
+   общественной лицензии GNU.
+
+   Вы должны были получить копию Стандартной общественной лицензии GNU
+   вместе с этой программой. Если это не так, см.
+   <http://www.gnu.org/licenses/>.)
+*/
+
 package com.krotos139.room_z1;
 
 import java.lang.reflect.Array;
@@ -8,12 +39,14 @@ public class Modbus {
 	private final static String TAG = "Modbus";
 
 	// PDU
-	int slave_addr;
 	int reg;
 	int count;
 	int cmd;
 	int data;
 	int data_array[];
+	
+	// APU
+	int slave_addr;
 	
 	// TPDU
 	int TransactionID;
@@ -22,16 +55,15 @@ public class Modbus {
 	
 	final static int cmd_read_coil		= 0x01;
 	final static int cmd_read_discrete	= 0x02;
-	final static int cmd_read_holding		= 0x03;
+	final static int cmd_read_holding	= 0x03;
 	final static int cmd_read_input		= 0x04;
 	final static int cmd_write_coil		= 0x05;
 	final static int cmd_write_holding	= 0x06;
-	final static int cmd_write_coils		= 0x0F;
+	final static int cmd_write_coils	= 0x0F;
 	final static int cmd_write_holdings	= 0x10;
 	
-	Modbus(int addr) {
+	Modbus() {
 		super();
-		this.slave_addr = addr;
 		this.TransactionID = 0;
 		this.ProtocolID = 0;
 		this.Length = 0;
@@ -102,14 +134,18 @@ public class Modbus {
 	}
 	
 	byte[] RTU_unpack(byte pack_in[]) {
+		return RTU_unpack(pack_in, pack_in.length);
+	}
+	
+	byte[] RTU_unpack(byte pack_in[], int length) {
 		byte pack[];
 		byte[] crc;
 		int i;
 		
-		pack = new byte[pack_in.length-2];
-		crc = CRCMODBUS.calc(pack_in, pack_in.length-2);
+		pack = new byte[length-2];
+		crc = CRCMODBUS.calc(pack_in, length-2);
 		
-		if ( (pack[pack_in.length-2] != (byte) crc[0]) || (pack[pack_in.length-1] != (byte) crc[1]) ) {
+		if ( (pack_in[length-2] != (byte) crc[0]) || (pack_in[length-1] != (byte) crc[1]) ) {
 			Log.e(TAG, "Error modbus CRC");
 			return null;
 		}
@@ -170,6 +206,63 @@ public class Modbus {
 		return pack;
 	}
 	
+
+	byte[] PDU_encode_request() {
+		byte pack[];
+		int i;
+		
+		switch (this.cmd) {
+			case cmd_read_coil:
+			case cmd_read_discrete:
+			case cmd_read_holding:
+			case cmd_read_input:
+			case cmd_write_coil:
+			case cmd_write_holding:
+				pack = new byte[6];
+				break;
+			case cmd_write_coils:
+			case cmd_write_holdings:
+				pack = new byte[7+this.count*2];
+				break;
+			default:
+				return null;
+		}
+		
+		pack[0] = (byte) this.slave_addr;
+		pack[1] = (byte) this.cmd;
+		switch (this.cmd) {
+			case cmd_read_coil:
+			case cmd_read_discrete:
+			case cmd_read_holding:
+			case cmd_read_input:
+				pack[2] = (byte) ((this.reg >> 8) & 0xFF);
+				pack[3] = (byte) (this.reg & 0xFF);
+				pack[4] = (byte) ((this.count >> 8) & 0xFF);
+				pack[5] = (byte) (this.count & 0xFF);
+				break;
+		case cmd_write_coil:
+		case cmd_write_holding:
+				pack[2] = (byte) ((this.reg >> 8) & 0xFF);
+				pack[3] = (byte) (this.reg & 0xFF);
+				pack[4] = (byte) ((this.data >> 8) & 0xFF);
+				pack[5] = (byte) (this.data & 0xFF);
+				break;
+		case cmd_write_coils:
+		case cmd_write_holdings:
+			pack[2] = (byte) ((this.reg >> 8) & 0xFF);
+			pack[3] = (byte) (this.reg & 0xFF);
+			pack[4] = (byte) ((this.count >> 8) & 0xFF);
+			pack[5] = (byte) (this.count & 0xFF);
+			pack[6] = (byte) (this.count*2);
+			for (i=0;i<this.count;i++) {
+				pack[7+i*2] = (byte) ((this.data_array[i] >> 8) & 0xFF);
+				pack[8+i*2] = (byte) (this.data_array[i] & 0xFF);
+			}
+				break;
+		}
+		return pack;
+	}
+	
 	byte[] PDU_encode_answer() {
 		byte pack[];
 		int i;
@@ -221,6 +314,7 @@ public class Modbus {
 		}
 		return pack;
 	}
+
 	
 	void PDU_decode_request(byte pack[]) {
 		int i;
@@ -259,4 +353,40 @@ public class Modbus {
 		}
 		
 	}
+	
+	void PDU_decode_answer(byte pack[]) {
+		int i;
+		
+		this.slave_addr = pack[0];
+		this.cmd = pack[1];
+		switch (this.cmd) {
+			case cmd_read_coil:
+			case cmd_read_discrete:
+			case cmd_read_holding:
+			case cmd_read_input:
+				this.count	=	pack[2] / 2;
+				this.data_array = new int[this.count];
+				for (i=0;i<count;i++) {
+					this.data_array[i]	=	pack[3+i*2] << 8;
+					this.data_array[i]	+=	pack[4+i*2];
+				}
+				break;
+			case cmd_write_coil:
+			case cmd_write_holding:
+				this.reg	=	pack[2] << 8;
+				this.reg	+=	pack[3];
+				this.data	=	pack[4] << 8;
+				this.data	+=	pack[5];
+				break;
+			case cmd_write_coils:
+			case cmd_write_holdings:
+				this.reg	=	pack[2] << 8;
+				this.reg	+=	pack[3];
+				this.count	=	pack[4] << 8;
+				this.count	+=	pack[5];
+				break;
+		}
+		
+	}
+	
 }

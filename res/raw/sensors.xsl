@@ -35,7 +35,7 @@
       </tr>
       <tr>
         <td> Current </td>
-        <td><xsl:value-of select='response/current/A'/> A</td>
+        <td><xsl:value-of select='response/current/amper'/> A</td>
       </tr>
       <tr>
         <td> Gas (MQ-2 sensor) </td>
